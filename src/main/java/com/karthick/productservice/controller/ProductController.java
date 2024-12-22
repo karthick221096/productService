@@ -1,5 +1,6 @@
 package com.karthick.productservice.controller;
 
+import com.karthick.productservice.ProductNotFoundException;
 import com.karthick.productservice.dtos.ErrorDto;
 import com.karthick.productservice.dtos.FakeStoreProductResponseDto;
 import com.karthick.productservice.dtos.ProductRequestDto;
@@ -22,7 +23,7 @@ public class ProductController {
         this.productService = productService;
     }
     @GetMapping("/product/{id}")
-    public ProductResponseDto getProductById(@PathVariable("id") Long id ){
+    public ProductResponseDto getProductById(@PathVariable("id") Long id ) throws ProductNotFoundException {
         Product product = productService.getProductById(id);
         return ProductResponseDto.from(product);
     }
@@ -55,11 +56,4 @@ public class ProductController {
         productService.partialUpdate(product);
     }
 
-    @ExceptionHandler(NullPointerException.class)
-    public ErrorDto nullPointerExcpetionHandler(){
-        ErrorDto errorDto = new ErrorDto();
-        errorDto.setMessage("something went wrong");
-        errorDto.setStatus("Failure");
-        return errorDto;
-    }
 }

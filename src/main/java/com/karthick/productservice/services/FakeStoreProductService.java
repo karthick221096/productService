@@ -1,5 +1,6 @@
 package com.karthick.productservice.services;
 
+import com.karthick.productservice.ProductNotFoundException;
 import com.karthick.productservice.dtos.FakeStoreProductRequestDto;
 import com.karthick.productservice.dtos.FakeStoreProductResponseDto;
 import com.karthick.productservice.dtos.ProductRequestDto;
@@ -25,13 +26,15 @@ public class FakeStoreProductService implements ProductService{
     }
 
     @Override
-    public Product getProductById(Long id) {
+    public Product getProductById(Long id) throws ProductNotFoundException {
         String url = "https://fakestoreapi.com/products/"+id;
         FakeStoreProductResponseDto responseDto =
                 restTemplate.getForObject(url,
                         FakeStoreProductResponseDto.class);
 
-        assert responseDto != null;
+        if(responseDto == null){
+            throw new ProductNotFoundException("product with id : "+id+" not found");
+        }
         return responseDto.toProduct();
     }
 
