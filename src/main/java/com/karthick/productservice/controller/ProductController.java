@@ -1,5 +1,6 @@
 package com.karthick.productservice.controller;
 
+import com.karthick.productservice.dtos.ErrorDto;
 import com.karthick.productservice.dtos.FakeStoreProductResponseDto;
 import com.karthick.productservice.dtos.ProductRequestDto;
 import com.karthick.productservice.dtos.ProductResponseDto;
@@ -7,10 +8,7 @@ import com.karthick.productservice.model.Product;
 import com.karthick.productservice.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,5 +48,18 @@ public class ProductController {
                 productRequestDto.getCategory());
 
         return ProductResponseDto.from(product);
+    }
+
+    @PostMapping("/product/{id}")
+    public void updateProduct(Product product){
+        productService.partialUpdate(product);
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    public ErrorDto nullPointerExcpetionHandler(){
+        ErrorDto errorDto = new ErrorDto();
+        errorDto.setMessage("something went wrong");
+        errorDto.setStatus("Failure");
+        return errorDto;
     }
 }

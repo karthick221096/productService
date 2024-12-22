@@ -2,8 +2,13 @@ package com.karthick.productservice.services;
 
 import com.karthick.productservice.dtos.FakeStoreProductRequestDto;
 import com.karthick.productservice.dtos.FakeStoreProductResponseDto;
+import com.karthick.productservice.dtos.ProductRequestDto;
+import com.karthick.productservice.dtos.ProductResponseDto;
 import com.karthick.productservice.model.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -72,6 +77,16 @@ public class FakeStoreProductService implements ProductService{
      */
     @Override
     public Product partialUpdate(Product product) {
-        return null;
+        HttpEntity<Product> FakeStoreProductRequestDto = new HttpEntity<>(product);
+
+        ResponseEntity<FakeStoreProductResponseDto> responseEntity =
+        restTemplate.exchange("https://fakestoreapi.com/products"+ product.getId(),
+                HttpMethod.PATCH,
+                FakeStoreProductRequestDto,
+                FakeStoreProductResponseDto.class);
+
+        FakeStoreProductResponseDto responseDto = responseEntity.getBody();
+        assert responseDto != null;
+        return responseDto.toProduct();
     }
 }
