@@ -92,4 +92,12 @@ public class FakeStoreProductService implements ProductService{
         assert responseDto != null;
         return responseDto.toProduct();
     }
+
+    /**
+     * @param o
+     */
+    @Override
+    public void deleteproduct(Object o) {
+
+    }
 }
