@@ -53,7 +53,7 @@ public class ProductController {
     }
 
     @PostMapping("/product/{id}")
-    public void updateProduct(Product product){
+    public void updateProduct(Product product) throws ProductNotFoundException {
         productService.partialUpdate(product);
     }
 

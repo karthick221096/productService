@@ -4,13 +4,11 @@ import com.karthick.productservice.ProductNotFoundException;
 import com.karthick.productservice.dtos.FakeStoreProductRequestDto;
 import com.karthick.productservice.dtos.FakeStoreProductResponseDto;
 import com.karthick.productservice.dtos.ProductRequestDto;
-import com.karthick.productservice.dtos.ProductResponseDto;
 import com.karthick.productservice.model.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -95,10 +93,10 @@ public class FakeStoreProductService implements ProductService{
     }
 
     /**
-     * @param o
+     * @param product
      */
     @Override
-    public void deleteproduct(Object o) {
+    public void deleteProduct(Product product) {
 
     }
 }

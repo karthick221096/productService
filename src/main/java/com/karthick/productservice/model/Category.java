@@ -15,10 +15,10 @@ import java.util.List;
 @Entity
 @Table(name = "Category")
 public class Category extends BaseModel{
-    @Column(name = "category_name")
-    private String name;
+    @Column(name = "category_name", unique = true)
+    private String categoryName;
     @Column(name = "category_description")
-    private String description;
+    private String categoryDescription;
     @OneToMany(mappedBy = "category")
     private List<Product> productList;
 }

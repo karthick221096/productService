@@ -24,7 +24,7 @@ public class ProductResponseDto {
         productResponseDto.setDescription(product.getDescription());
         productResponseDto.setImageUrl(product.getImageUrl());
         productResponseDto.setPrice(product.getPrice());
-        productResponseDto.setCategoryName(product.getCategory().getName());
+        productResponseDto.setCategoryName(product.getCategory().getCategoryName());
         return productResponseDto;
     }
 }

@@ -1,14 +1,25 @@
 package com.karthick.productservice.services;
 
 import com.karthick.productservice.ProductNotFoundException;
+import com.karthick.productservice.model.Category;
 import com.karthick.productservice.model.Product;
-import org.springframework.stereotype.Component;
+import com.karthick.productservice.repositories.CategoryRepository;
+import com.karthick.productservice.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service("ProductDbService")
 public class ProductDbService implements ProductService{
+    private ProductRepository productRepository;
+    private CategoryRepository categoryRepository;
+
+    public ProductDbService(ProductRepository productRepository, CategoryRepository categoryRepository){
+        this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
+    }
+
     /**
      * @param id
      * @return
@@ -16,7 +27,11 @@ public class ProductDbService implements ProductService{
      */
     @Override
     public Product getProductById(Long id) throws ProductNotFoundException {
-        return null;
+        Optional<Product> productOptional = productRepository.findById(id);
+        if(productOptional.isEmpty()){
+            throw new ProductNotFoundException("product is not available");
+        }
+        return productOptional.get();
     }
 
     /**
@@ -24,7 +39,7 @@ public class ProductDbService implements ProductService{
      */
     @Override
     public List<Product> getAllProducts() {
-        return null;
+        return productRepository.findAll();
     }
 
     /**
@@ -37,7 +52,19 @@ public class ProductDbService implements ProductService{
      */
     @Override
     public Product createProduct(String title, String description, Double price, String imageUrl, String categoryName) {
-        return null;
+        Product product = new Product();
+
+        product.setTitle(title);
+        product.setDescription(description);
+        product.setPrice(price);
+        product.setImageUrl(imageUrl);
+
+//        Category category = new Category();
+////        category.setName(categoryName); what if the category is already exist
+
+        product.setCategory(getCategoryFromDb(categoryName));
+
+        return productRepository.save(product);
     }
 
     /**
@@ -45,15 +72,48 @@ public class ProductDbService implements ProductService{
      * @return
      */
     @Override
-    public Product partialUpdate(Product product) {
-        return null;
+    public Product partialUpdate(Product product) throws ProductNotFoundException {
+        Optional<Product> productOptional = productRepository.findById(product.getId());
+        if(productOptional.isEmpty()){
+            throw new ProductNotFoundException("there is no existing product with respective ID");
+        }
+
+        Product productToBeUpdate = productOptional.get();
+
+        if(product.getTitle()!=null){
+            productToBeUpdate.setTitle(product.getTitle());
+        }
+        if(product.getDescription()!=null){
+            productToBeUpdate.setDescription(product.getDescription());
+        }
+        if(product.getPrice()!=null){
+            productToBeUpdate.setPrice(product.getPrice());
+        }
+        if(product.getImageUrl()!=null){
+            productToBeUpdate.setImageUrl(product.getImageUrl());
+        }
+        if(product.getCategory()!=null){
+            productToBeUpdate.setCategory(product.getCategory());
+        }
+
+        return productRepository.save(productToBeUpdate);
     }
 
     /**
-     * @param o
+     * @param product
      */
     @Override
-    public void deleteproduct(Object o) {
+    public void deleteProduct(Product product) {
+        productRepository.deleteById(product.getId());
+    }
 
+    private Category getCategoryFromDb(String categoryName){
+        Optional<Category> categoryOptional =categoryRepository.findByCategoryName(categoryName);
+        if(categoryOptional.isEmpty()){
+            Category category = new Category();
+            category.setCategoryName(categoryName);
+            return categoryRepository.save(category);
+        }
+        return categoryOptional.get();
     }
 }
