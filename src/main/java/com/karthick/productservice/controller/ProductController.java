@@ -8,6 +8,7 @@ import com.karthick.productservice.dtos.ProductResponseDto;
 import com.karthick.productservice.model.Product;
 import com.karthick.productservice.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ public class ProductController {
 
     private ProductService productService;
     @Autowired
-    public ProductController(ProductService productService){
+    public ProductController(@Qualifier("ProductDbService") ProductService productService){
         this.productService = productService;
     }
     @GetMapping("/product/{id}")
