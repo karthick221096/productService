@@ -7,8 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-@Component(value = "ProductDbService")
+@Service("ProductDbService")
 public class ProductDbService implements ProductService{
     /**
      * @param id

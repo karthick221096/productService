@@ -1,6 +1,7 @@
 package com.karthick.productservice.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,5 +13,6 @@ public class Product extends BaseModel{
     private String description;
     private Double price;
     private String imageUrl;
+    @ManyToOne
     private Category category;
 }
