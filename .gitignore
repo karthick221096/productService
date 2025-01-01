@@ -33,3 +33,4 @@ build/
 .vscode/
 
 productservice.log
+productservice.log.*
