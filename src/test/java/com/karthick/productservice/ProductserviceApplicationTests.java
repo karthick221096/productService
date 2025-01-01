@@ -45,4 +45,10 @@ class ProductserviceApplicationTests {
 //        System.out.println(categories);
 //    }
 
+    @Test
+    public void getCategory(){
+        List<Category> categories = categoryRepository.findAll();
+        System.out.println(categories);
+    }
+
 }
