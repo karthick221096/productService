@@ -1,10 +1,8 @@
 package com.karthick.productservice.controller;
 
 import com.karthick.productservice.ProductNotFoundException;
-import com.karthick.productservice.dtos.ErrorDto;
-import com.karthick.productservice.dtos.FakeStoreProductResponseDto;
-import com.karthick.productservice.dtos.ProductRequestDto;
-import com.karthick.productservice.dtos.ProductResponseDto;
+import com.karthick.productservice.commons.AuthenticationCommons;
+import com.karthick.productservice.dtos.*;
 import com.karthick.productservice.model.Product;
 import com.karthick.productservice.services.ProductService;
 import jakarta.validation.Valid;
@@ -21,12 +19,22 @@ import java.util.List;
 public class ProductController {
 
     private ProductService productService;
+    private AuthenticationCommons authenticationCommons;
     @Autowired
-    public ProductController(@Qualifier("ProductDbService") ProductService productService){
+    public ProductController(@Qualifier("ProductDbService") ProductService productService,
+                             AuthenticationCommons authenticationCommons){
         this.productService = productService;
+        this.authenticationCommons = authenticationCommons;
     }
     @GetMapping("/product/{id}")
-    public ProductResponseDto getProductById(@PathVariable("id") Long id ) throws ProductNotFoundException {
+    public ProductResponseDto getProductById(@PathVariable("id") Long id , @RequestHeader("Authorization") String token) throws ProductNotFoundException {
+
+        UserDto userDto = authenticationCommons.validateToken(token);
+        if(userDto == null){
+            // TODO : user token is not valid
+            return null;
+        }
+
         Product product = productService.getProductById(id);
         return ProductResponseDto.from(product);
     }
