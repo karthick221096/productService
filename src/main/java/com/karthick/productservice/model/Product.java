@@ -6,13 +6,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.context.annotation.ComponentScan;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "Product")
-@ComponentScan
 public class Product extends BaseModel{
     private String title;
     @Column(name = "product_description")

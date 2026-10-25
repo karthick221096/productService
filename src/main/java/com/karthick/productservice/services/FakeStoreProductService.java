@@ -6,6 +6,9 @@ import com.karthick.productservice.dtos.FakeStoreProductResponseDto;
 import com.karthick.productservice.dtos.ProductRequestDto;
 import com.karthick.productservice.model.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -37,19 +40,21 @@ public class FakeStoreProductService implements ProductService{
         return responseDto.toProduct();
     }
 
-    /**
-     * @return
-     */
     @Override
-    public List<Product> getAllProducts() {
+    public Page<Product> getAllProducts(int pageNumber, int pageSize, String sortBy) {
         FakeStoreProductResponseDto[] responseDtos = restTemplate
-                .getForObject("https://fakestoreapi.com/products",FakeStoreProductResponseDto[].class);
+                .getForObject("https://fakestoreapi.com/products", FakeStoreProductResponseDto[].class);
 
         List<Product> productList = new ArrayList<>();
-        for (FakeStoreProductResponseDto responseDto :responseDtos){
-            productList.add(responseDto.toProduct());
+        if (responseDtos != null) {
+            for (FakeStoreProductResponseDto responseDto : responseDtos) {
+                productList.add(responseDto.toProduct());
+            }
         }
-        return productList;
+        // FakeStore API doesn't support paging natively, so we simulate it
+        int start = Math.min(pageNumber * pageSize, productList.size());
+        int end = Math.min(start + pageSize, productList.size());
+        return new PageImpl<>(productList.subList(start, end), PageRequest.of(pageNumber, pageSize), productList.size());
     }
 
     /**
