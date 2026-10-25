@@ -1,25 +1,32 @@
+
 # productService
-Learning to create a product service using java
 
-### What this does
-* Manage products and categories for the ecommerce store
-* Create, read, update, delete products
-* Paging and sorting on product listing
-* Redis caching for faster product fetching
-* Search products by name or category
-* Validates user token by calling userService before serving requests
+Product catalogue service for the e-commerce platform. It is an OAuth2 resource
+server: reads are public and writes require a JWT issued by userService.
 
-### Requirements
-* Product CRUD apis
-* Category management
-* Paging and sorting on get all products
-* Redis cache integration on getProductById and getAllProducts
-* Soft delete using isDeleted flag
-* OAuth2 resource server to validate jwt tokens from userService
+## What it does
+- CRUD for products and categories with DTOs
+- Paging and sorting on the product list
+- Soft delete (`isDeleted` flag) with a delete endpoint
+- Global exception handling (`ProductNotFoundException` returns 404)
+- Database versioning with Flyway, JPA with MySQL
 
-### How to run
-* Make sure mysql is running on port 3306
-* Make sure redis is running on port 6379
-* Create database productservice in mysql
-* Run ProductServiceApplication.java from intellij
-* Service starts on port 8181
+## Endpoints
+| Method | Path | Auth |
+  |---|---|---|
+| GET | `/product/{id}` | Public |
+| GET | `/products/?pageNumber=0&pageSize=10&sortBy=id` | Public |
+| POST | `/product/` | JWT |
+| PATCH | `/product/{id}` | JWT |
+| DELETE | `/product/{id}` | JWT (soft delete) |
+
+## Tech
+Java 17, Spring Boot 3.x, Spring Data JPA, Flyway, MySQL,
+Spring Security OAuth2 resource server.
+
+## Run
+1. Start MySQL and create the database `productservice`.
+2. Provide the datasource username and password through environment variables
+   or a local, uncommitted `application.properties`.
+3. Start userService on port 9091 first. The JWT issuer is `http://localhost:9091`.
+4. `./mvnw spring-boot:run` (the service starts on port 8181).
