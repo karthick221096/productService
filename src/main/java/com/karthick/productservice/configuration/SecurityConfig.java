@@ -10,19 +10,23 @@
   import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
   import org.springframework.security.web.SecurityFilterChain;
 
+  import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+  import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+
+
   @Configuration
   @EnableWebSecurity
   public class SecurityConfig {
-      @Bean
-      public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-          http
-                  .authorizeHttpRequests(authorize -> authorize
-                          .requestMatchers(HttpMethod.GET, "/product/**", "/products/**").permitAll()
-                          .anyRequest().authenticated()
-                  )
-                  .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
-          return http.build();
-      }
+//      @Bean
+//      public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//          http
+//                  .authorizeHttpRequests(authorize -> authorize
+//                          .requestMatchers(HttpMethod.GET, "/product/**", "/products/**").permitAll()
+//                          .anyRequest().authenticated()
+//                  )
+//                  .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
+//          return http.build();
+//      }
 
       @Bean
       JedisConnectionFactory jedisConnectionFactory() {
@@ -34,6 +38,30 @@
           RedisTemplate<String, Object> template = new RedisTemplate<>();
           template.setConnectionFactory(jedisConnectionFactory());
           return template;
+      }
+
+      @Bean
+      public JwtAuthenticationConverter jwtAuthenticationConverter() {
+          JwtGrantedAuthoritiesConverter authorities = new JwtGrantedAuthoritiesConverter();
+          authorities.setAuthoritiesClaimName("roles");
+          authorities.setAuthorityPrefix("");
+          JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+          converter.setJwtGrantedAuthoritiesConverter(authorities);
+          return converter;
+      }
+
+      @Bean
+      public SecurityFilterChain filterChain(HttpSecurity http,
+                                             JwtAuthenticationConverter converter) throws Exception {
+          http
+                  .authorizeHttpRequests(auth -> auth
+                          .requestMatchers(HttpMethod.GET, "/product/**", "/products/**").permitAll()
+                          .requestMatchers(HttpMethod.POST, "/product/**").hasAuthority("ADMIN")
+                          .requestMatchers(HttpMethod.PATCH, "/product/**").hasAuthority("ADMIN")
+                          .requestMatchers(HttpMethod.DELETE, "/product/**").hasAuthority("ADMIN")
+                          .anyRequest().authenticated())
+                  .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(converter)));
+          return http.build();
       }
 
 
