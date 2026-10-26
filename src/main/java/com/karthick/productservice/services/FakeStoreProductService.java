@@ -6,6 +6,9 @@ import com.karthick.productservice.dtos.FakeStoreProductResponseDto;
 import com.karthick.productservice.dtos.ProductRequestDto;
 import com.karthick.productservice.model.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +31,7 @@ public class FakeStoreProductService implements ProductService{
     }
 
     @Override
+    @Cacheable(value = "products", key = "#id")
     public Product getProductById(Long id) throws ProductNotFoundException {
         String url = "https://fakestoreapi.com/products/"+id;
         FakeStoreProductResponseDto responseDto =
@@ -41,6 +45,10 @@ public class FakeStoreProductService implements ProductService{
     }
 
     @Override
+    @Cacheable(
+            value = "products",
+            key = "'all:' + #pageNumber + ':' + #pageSize + ':' + #sortBy"
+    )
     public Page<Product> getAllProducts(int pageNumber, int pageSize, String sortBy) {
         FakeStoreProductResponseDto[] responseDtos = restTemplate
                 .getForObject("https://fakestoreapi.com/products", FakeStoreProductResponseDto[].class);
@@ -62,6 +70,7 @@ public class FakeStoreProductService implements ProductService{
      * @return
      */
     @Override
+    @CachePut(value = "products", key = "#result.id")
     public Product createProduct(String title,String description, Double price, String imageUrl,String categoryName) {
         FakeStoreProductRequestDto requestDto = new FakeStoreProductRequestDto();
 
@@ -83,6 +92,7 @@ public class FakeStoreProductService implements ProductService{
      * @return
      */
     @Override
+    @CachePut(value = "products", key = "#result.id")
     public Product partialUpdate(Product product) {
         HttpEntity<Product> FakeStoreProductRequestDto = new HttpEntity<>(product);
 
@@ -101,6 +111,7 @@ public class FakeStoreProductService implements ProductService{
      * @param product
      */
     @Override
+    @CacheEvict(value = "products", key = "#product.id")
     public void deleteProduct(Product product) {
 
     }
