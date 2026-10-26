@@ -5,6 +5,7 @@ import com.karthick.productservice.dtos.FakeStoreProductRequestDto;
 import com.karthick.productservice.dtos.FakeStoreProductResponseDto;
 import com.karthick.productservice.dtos.ProductRequestDto;
 import com.karthick.productservice.model.Product;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -21,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service("FakeStoreProductService")
 public class FakeStoreProductService implements ProductService{
 
@@ -33,6 +35,8 @@ public class FakeStoreProductService implements ProductService{
     @Override
     @Cacheable(value = "products", key = "#id")
     public Product getProductById(Long id) throws ProductNotFoundException {
+        log.info("Cache miss for productId={}, calling FakeStore API", id);
+
         String url = "https://fakestoreapi.com/products/"+id;
         FakeStoreProductResponseDto responseDto =
                 restTemplate.getForObject(url,
