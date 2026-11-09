@@ -55,11 +55,14 @@
                                              JwtAuthenticationConverter converter) throws Exception {
           http
                   .authorizeHttpRequests(auth -> auth
-                          .requestMatchers(HttpMethod.GET, "/product/**", "/products/**").permitAll()
+                          // All GET endpoints require a valid JWT — any authenticated user can read
+                          .requestMatchers(HttpMethod.GET, "/product/**", "/products/**").authenticated()
+                          // Write operations are restricted to ADMIN role
                           .requestMatchers(HttpMethod.POST, "/product/**").hasAuthority("ADMIN")
                           .requestMatchers(HttpMethod.PATCH, "/product/**").hasAuthority("ADMIN")
                           .requestMatchers(HttpMethod.DELETE, "/product/**").hasAuthority("ADMIN")
                           .anyRequest().authenticated())
+                  // Validate JWT tokens issued by userService (issuer-uri configured in application.properties)
                   .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(converter)));
           return http.build();
       }

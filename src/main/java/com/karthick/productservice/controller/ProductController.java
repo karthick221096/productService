@@ -1,7 +1,6 @@
 package com.karthick.productservice.controller;
 
 import com.karthick.productservice.ProductNotFoundException;
-import com.karthick.productservice.commons.AuthenticationCommons;
 import com.karthick.productservice.dtos.*;
 import com.karthick.productservice.model.Product;
 import com.karthick.productservice.services.ProductService;
@@ -20,13 +19,10 @@ import java.util.List;
 public class ProductController {
 
     private ProductService productService;
-    private AuthenticationCommons authenticationCommons;
 
     @Autowired
-    public ProductController(@Qualifier("ProductDbService") ProductService productService,
-                             AuthenticationCommons authenticationCommons) {
+    public ProductController(@Qualifier("ProductDbService") ProductService productService) {
         this.productService = productService;
-        this.authenticationCommons = authenticationCommons;
     }
 
     @GetMapping("/product/{id}")
